@@ -87,6 +87,22 @@ All config via env vars (loaded from `.env` at process start):
 - **Prompt-injection scrubber.** Incoming message text is sanitized for known prompt-injection patterns (zalgo, role-spoof headers, fake fences). Hits are wrapped not deleted so the operator sees the attempt.
 - **Token redaction.** `list_workspaces` returns redacted profiles only. Tokens never appear in tool responses.
 
+## Related MCPs
+
+Same author, same architecture pattern (FastMCP, draft+confirm on writes where applicable, vault auto-export, MIT):
+
+- [imessage-mcp](https://github.com/adelaidasofia/imessage-mcp) - macOS iMessage
+- [whatsapp-mcp](https://github.com/adelaidasofia/whatsapp-mcp) - WhatsApp via whatsmeow
+- [google-workspace-mcp](https://github.com/adelaidasofia/google-workspace-mcp) - Gmail / Calendar / Drive / Docs / Sheets
+- [apollo-mcp](https://github.com/adelaidasofia/apollo-mcp) - Apollo.io CRM + sequences
+- [substack-mcp](https://github.com/adelaidasofia/substack-mcp) - Substack writing + analytics
+- [luma-mcp](https://github.com/adelaidasofia/luma-mcp) - lu.ma events
+- [parse-mcp](https://github.com/adelaidasofia/parse-mcp) - markitdown / Docling / LlamaParse router
+- [rescuetime-mcp](https://github.com/adelaidasofia/rescuetime-mcp) - RescueTime productivity data
+- [graph-query-mcp](https://github.com/adelaidasofia/graph-query-mcp) - vault knowledge graph queries
+- [investor-relations-mcp](https://github.com/adelaidasofia/investor-relations-mcp) - seed-raise pipeline tracker
+- [vault-sync-mcp](https://github.com/adelaidasofia/vault-sync-mcp) - bidirectional vault sync
+
 ## License
 
 MIT — see [LICENSE](LICENSE).
