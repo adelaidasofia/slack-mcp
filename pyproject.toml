@@ -1,0 +1,22 @@
+[project]
+name = "slack-mcp"
+version = "0.1.1"
+description = "Multi-workspace Slack MCP server with draft+confirm safety, vault auto-export, and triple-mode auth (xoxc/xoxp/xoxb)."
+readme = "README.md"
+requires-python = ">=3.11"
+license = { text = "MIT" }
+authors = [{ name = "Adelaida Diaz-Roa" }]
+dependencies = [
+    "fastmcp>=3.2.4",
+    "slack_sdk>=3.30",
+]
+
+[project.scripts]
+slack-mcp = "slack_mcp.server:mcp.run"
+
+[build-system]
+requires = ["setuptools>=68", "wheel"]
+build-backend = "setuptools.build_meta"
+
+[tool.setuptools.packages.find]
+include = ["slack_mcp*"]
