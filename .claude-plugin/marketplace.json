@@ -1,0 +1,15 @@
+{
+  "$schema": "https://code.claude.com/schemas/marketplace.json",
+  "name": "slack-mcp",
+  "owner": {
+    "name": "Mycelium AI",
+    "url": "https://myceliumai.co"
+  },
+  "plugins": [
+    {
+      "name": "slack-mcp",
+      "source": "./",
+      "description": "Multi-workspace Slack MCP server with draft+confirm safety, vault auto-export, and triple-mode auth (xoxc/xoxp/xoxb)."
+    }
+  ]
+}

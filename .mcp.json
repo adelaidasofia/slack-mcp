@@ -1,0 +1,9 @@
+{
+  "mcpServers": {
+    "slack": {
+      "command": "python3",
+      "args": ["-m", "slack_mcp.server"],
+      "cwd": "${CLAUDE_PLUGIN_ROOT}"
+    }
+  }
+}
