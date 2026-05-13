@@ -18,6 +18,16 @@ One process, N workspaces, every write goes through draft → confirm. Built bec
 
 ## Install
 
+Open Claude Code, paste:
+
+    /plugin marketplace add adelaidasofia/slack-mcp
+    /plugin install slack-mcp@slack-mcp
+
+Then fill in tokens in `.env` (see SETUP.md for cookie extraction walkthrough).
+
+<details>
+<summary>Legacy install</summary>
+
 ```bash
 git clone https://github.com/adelaidasofia/slack-mcp.git ~/.claude/slack-mcp
 cd ~/.claude/slack-mcp
@@ -41,6 +51,8 @@ Register in your project `.mcp.json` (or via `claude mcp add -s user`):
 ```
 
 Restart Claude Code, then run `claude mcp list` to verify `slack` shows up.
+
+</details>
 
 ## Tools (v0.1.1)
 

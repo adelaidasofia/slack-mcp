@@ -1,0 +1,9 @@
+{
+  "name": "slack-mcp",
+  "description": "Multi-workspace Slack MCP server with draft+confirm safety, vault auto-export, and triple-mode auth (xoxc/xoxp/xoxb).",
+  "version": "0.1.1",
+  "author": {
+    "name": "Mycelium AI",
+    "url": "https://myceliumai.co"
+  }
+}
