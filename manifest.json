@@ -1,0 +1,57 @@
+{
+  "manifest_version": "0.4",
+  "name": "slack-mcp",
+  "display_name": "Multi-workspace Slack MCP server with draft+confirm safety, vault auto-export, a",
+  "version": "0.1.1",
+  "description": "Multi-workspace Slack MCP server with draft+confirm safety, vault auto-export, and triple-mode auth (xoxc/xoxp/xoxb).",
+  "author": {
+    "name": "adelaidasofia",
+    "url": "https://github.com/adelaidasofia"
+  },
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/adelaidasofia/slack-mcp.git"
+  },
+  "homepage": "https://github.com/adelaidasofia/slack-mcp",
+  "documentation": "https://github.com/adelaidasofia/slack-mcp#readme",
+  "support": "https://github.com/adelaidasofia/slack-mcp/issues",
+  "license": "MIT",
+  "keywords": [
+    "mcp",
+    "model-context-protocol",
+    "claude",
+    "fastmcp",
+    "slack"
+  ],
+  "server": {
+    "type": "python",
+    "entry_point": "server.py",
+    "mcp_config": {
+      "command": "python3",
+      "args": [
+        "${__dirname}/server.py"
+      ],
+      "env": {
+        "SLACK_XOXC_TOKEN": "${user_config.slack_xoxc_token}"
+      }
+    }
+  },
+  "tools_generated": true,
+  "compatibility": {
+    "claude_desktop": ">=0.10.0",
+    "platforms": [
+      "darwin",
+      "win32",
+      "linux"
+    ]
+  },
+  "user_config": {
+    "slack_xoxc_token": {
+      "type": "string",
+      "title": "Slack xoxc browser cookie",
+      "description": "Extracted via browser dev tools (or xoxb for bot auth)",
+      "required": true,
+      "sensitive": true
+    }
+  }
+}
