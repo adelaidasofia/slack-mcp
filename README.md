@@ -1,5 +1,20 @@
 # slack-mcp
 
+
+<!-- mycelium-badges:start -->
+
+<p>
+  <a href="https://github.com/adelaidasofia/slack-mcp/blob/main/LICENSE"><img alt="License" src="https://img.shields.io/github/license/adelaidasofia/slack-mcp?color=blue"></a>
+  <a href="https://github.com/adelaidasofia/slack-mcp/stargazers"><img alt="GitHub stars" src="https://img.shields.io/github/stars/adelaidasofia/slack-mcp?color=eab308"></a>
+  <a href="https://github.com/adelaidasofia/slack-mcp/commits/main"><img alt="Last commit" src="https://img.shields.io/github/last-commit/adelaidasofia/slack-mcp"></a>
+  <a href="https://github.com/adelaidasofia/slack-mcp/issues"><img alt="Open issues" src="https://img.shields.io/github/issues/adelaidasofia/slack-mcp"></a>
+  <a href="https://pypi.org/project/adelaidasofia-slack-mcp/"><img alt="PyPI version" src="https://img.shields.io/pypi/v/adelaidasofia-slack-mcp?color=blue&label=pypi"></a>
+  <a href="https://pypi.org/project/adelaidasofia-slack-mcp/"><img alt="PyPI downloads" src="https://img.shields.io/pypi/dm/adelaidasofia-slack-mcp?color=blue&label=downloads"></a>
+  <a href="https://myceliumai.co"><img alt="Built by Mycelium AI" src="https://img.shields.io/badge/built_by-Mycelium_AI-15B89A"></a>
+</p>
+
+<!-- mycelium-badges:end -->
+
 Multi-workspace Slack MCP server with draft+confirm safety, vault auto-export, and triple-mode auth.
 
 One process, N workspaces, every write goes through draft → confirm. Built because the existing Slack MCP servers are single-workspace per instance and the Anthropic reference impl was deprecated.
