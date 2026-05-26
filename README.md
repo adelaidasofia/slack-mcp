@@ -151,7 +151,3 @@ This plugin sends a single anonymous install signal to `myceliumai.co` the first
 ## License
 
 MIT — see [LICENSE](LICENSE).
-
----
-
-Built by Adelaida Diaz-Roa. Full install or team version at diazroa.com.
