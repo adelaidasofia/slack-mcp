@@ -1,10 +1,13 @@
 """Cross-cutting integration test (Lesson #23).
 
-Exercises the architecture end-to-end with stubbed Slack API calls. Runs
-bare (`python3 path/to/test.py`), exits 0 on full pass, names the failing
-step on first failure.
+Real pytest module: every step below is a collected `test_*` function, so
+`pytest tests/` runs them (previously this was a bare script with no test
+functions, so pytest collected 0 and exited 5 — the CI gate was green but
+validated nothing). Also runnable directly: `python3 tests/integration/test_full_pipeline.py`
+invokes pytest in-process.
 
 What it covers:
+  0. Server module constructs (every tool registers on import)
   1. Imports clean (every module loads without error)
   2. Workspace registry parses example config
   3. Draft store: create -> get -> confirm path
@@ -30,6 +33,8 @@ import tempfile
 import time
 from pathlib import Path
 
+import pytest
+
 ROOT = Path(__file__).resolve().parents[2]
 sys.path.insert(0, str(ROOT))
 
@@ -39,15 +44,31 @@ def step(name: str) -> None:
 
 
 def fail(step_name: str, msg: str) -> None:
-    print(f"  ✗ FAIL at step: {step_name}")
-    print(f"    {msg}")
-    sys.exit(1)
+    # pytest.fail raises a BaseException subclass (outcomes.Failed), so the
+    # per-step `except Exception` / `except ValueError` guards below let a
+    # deliberate failure propagate (same control flow the original sys.exit had)
+    # while `finally` blocks still run to restore monkeypatched module state.
+    pytest.fail(f"{step_name}: {msg}")
 
 
-def main() -> int:
-    print("slack-mcp integration test")
+def test_server_module_constructs() -> None:
+    """Import the FastMCP server entry module. Constructing `mcp` registers
+    every tool, so a dependency bump that breaks the server (e.g. a
+    fastmcp/starlette major) fails here."""
+    name = "server module constructs"
+    try:
+        from fastmcp import FastMCP
+        from slack_mcp import server
+        if not isinstance(server.mcp, FastMCP):
+            fail(name, f"server.mcp is not a FastMCP instance: {type(server.mcp)!r}")
+        step(name)
+    except pytest.fail.Exception:
+        raise
+    except Exception as e:  # noqa: BLE001
+        fail(name, f"server import/construct failed: {e}")
 
-    # --- Step 1: imports ---
+
+def test_imports() -> None:
     name = "imports"
     try:
         from slack_mcp import (  # noqa: F401
@@ -58,7 +79,8 @@ def main() -> int:
     except Exception as e:  # noqa: BLE001
         fail(name, f"import failed: {e}")
 
-    # --- Step 2: workspace registry parses ---
+
+def test_workspace_registry_parses() -> None:
     name = "workspace registry parses example env"
     try:
         # Inject example env without persisting
@@ -80,10 +102,13 @@ def main() -> int:
         if registry.get("test2").auth_type != "xoxp":
             fail(name, "test2 auth_type wrong")
         step(name)
+    except pytest.fail.Exception:
+        raise
     except Exception as e:  # noqa: BLE001
         fail(name, str(e))
 
-    # --- Step 3: draft store create -> confirm ---
+
+def test_draft_store_create_confirm() -> None:
     name = "draft store: create + confirm path"
     try:
         from slack_mcp.drafts import DraftStore
@@ -103,10 +128,13 @@ def main() -> int:
         except ValueError:
             pass
         step(name)
+    except pytest.fail.Exception:
+        raise
     except Exception as e:  # noqa: BLE001
         fail(name, str(e))
 
-    # --- Step 4: draft store cancel path ---
+
+def test_draft_store_cancel() -> None:
     name = "draft store: create + cancel path"
     try:
         from slack_mcp.drafts import DraftStore
@@ -120,13 +148,16 @@ def main() -> int:
         except ValueError:
             pass
         step(name)
+    except pytest.fail.Exception:
+        raise
     except Exception as e:  # noqa: BLE001
         fail(name, str(e))
 
-    # --- Step 5: draft TTL expiry ---
+
+def test_draft_ttl_expiry() -> None:
     name = "draft TTL expiry behavior"
     try:
-        from slack_mcp.drafts import DraftStore, Draft
+        from slack_mcp.drafts import DraftStore, Draft  # noqa: F401
         store = DraftStore()
         d = store.create(workspace="test1", channel="C123",
                          channel_name="general", text="x")
@@ -139,10 +170,13 @@ def main() -> int:
             if "expired" not in str(e):
                 fail(name, f"wrong error: {e}")
         step(name)
+    except pytest.fail.Exception:
+        raise
     except Exception as e:  # noqa: BLE001
         fail(name, str(e))
 
-    # --- Step 6: scrubber neutralizes injection ---
+
+def test_scrubber_neutralizes_injection() -> None:
     name = "scrubber neutralizes known injection patterns"
     try:
         from slack_mcp.scrubber import scrub
@@ -154,10 +188,13 @@ def main() -> int:
         if "[scrubbed-prefix:" not in result:
             fail(name, f"injection prefix not scrubbed: {result}")
         step(name)
+    except pytest.fail.Exception:
+        raise
     except Exception as e:  # noqa: BLE001
         fail(name, str(e))
 
-    # --- Step 7: markdown rendering shape ---
+
+def test_markdown_rendering() -> None:
     name = "markdown rendering: parent + replies"
     try:
         from slack_mcp._shared.markdown import render_thread
@@ -175,10 +212,13 @@ def main() -> int:
         if "ts: 1700000000.000100" not in out:
             fail(name, "ts anchor missing")
         step(name)
+    except pytest.fail.Exception:
+        raise
     except Exception as e:  # noqa: BLE001
         fail(name, str(e))
 
-    # --- Step 8: audit log appends JSONL ---
+
+def test_audit_log_appends_jsonl() -> None:
     name = "audit log appends valid JSONL"
     try:
         with tempfile.NamedTemporaryFile(suffix=".log", delete=False) as f:
@@ -201,10 +241,13 @@ def main() -> int:
             fail(name, "duration not recorded")
         os.unlink(audit_path)
         step(name)
+    except pytest.fail.Exception:
+        raise
     except Exception as e:  # noqa: BLE001
         fail(name, str(e))
 
-    # --- Step 9: vault export writes channel markdown ---
+
+def test_vault_export_writes_markdown() -> None:
     name = "vault export writes channel markdown to temp root"
     try:
         with tempfile.TemporaryDirectory() as tmp:
@@ -228,10 +271,13 @@ def main() -> int:
             if "type: slack-export" not in content:
                 fail(name, "frontmatter missing")
             step(name)
+    except pytest.fail.Exception:
+        raise
     except Exception as e:  # noqa: BLE001
         fail(name, str(e))
 
-    # --- Step 10: draft store carries update_message kind + before_text ---
+
+def test_draft_store_update_kind_roundtrip() -> None:
     name = "draft store: kind=update_message round-trips target_ts + before_text"
     try:
         from slack_mcp.drafts import DraftStore
@@ -255,10 +301,13 @@ def main() -> int:
         if not confirmed.confirmed:
             fail(name, "confirm flag not set for update draft")
         step(name)
+    except pytest.fail.Exception:
+        raise
     except Exception as e:  # noqa: BLE001
         fail(name, str(e))
 
-    # --- Step 11: edits tool module registers two tools ---
+
+def test_edits_module_registers_tools() -> None:
     name = "edits module registers delete_own_message + update_own_message"
     try:
         from slack_mcp.tools import edits
@@ -280,10 +329,13 @@ def main() -> int:
         if "update_own_message" not in fake.tools:
             fail(name, f"update_own_message not registered: {list(fake.tools)}")
         step(name)
+    except pytest.fail.Exception:
+        raise
     except Exception as e:  # noqa: BLE001
         fail(name, str(e))
 
-    # --- Step 12: delete_own_message invokes chat.delete ---
+
+def test_delete_own_message_calls_chat_delete() -> None:
     name = "delete_own_message calls safe_call against chat_delete"
     try:
         from slack_mcp.tools import edits as edits_mod
@@ -343,10 +395,13 @@ def main() -> int:
             edits_mod._resolve_channel = original_resolve_in_edits  # type: ignore
             ws_mod.REGISTRY.get = original_get  # type: ignore
         step(name)
+    except pytest.fail.Exception:
+        raise
     except Exception as e:  # noqa: BLE001
         fail(name, str(e))
 
-    # --- Step 13: update_own_message creates draft with before/after preview ---
+
+def test_update_own_message_stages_draft() -> None:
     name = "update_own_message stages a draft with before_text + target_ts"
     try:
         from slack_mcp.tools import edits as edits_mod
@@ -415,10 +470,13 @@ def main() -> int:
             edits_mod._resolve_channel = original_resolve_in_edits  # type: ignore
             ws_mod.REGISTRY.get = original_get  # type: ignore
         step(name)
+    except pytest.fail.Exception:
+        raise
     except Exception as e:  # noqa: BLE001
         fail(name, str(e))
 
-    # --- Step 14: confirm_send dispatches chat.update for update drafts ---
+
+def test_confirm_send_dispatches_chat_update() -> None:
     name = "confirm_send dispatches chat.update (not chat.postMessage) for update kind"
     try:
         from slack_mcp.tools import send as send_mod
@@ -485,12 +543,11 @@ def main() -> int:
             send_mod.safe_call = original_safe_call  # type: ignore
             ws_mod.REGISTRY.get = original_get  # type: ignore
         step(name)
+    except pytest.fail.Exception:
+        raise
     except Exception as e:  # noqa: BLE001
         fail(name, str(e))
 
-    print("\n✓ All steps passed.")
-    return 0
-
 
 if __name__ == "__main__":
-    sys.exit(main())
+    sys.exit(pytest.main([__file__, "-v"]))
