@@ -7,7 +7,7 @@ requires-python = ">=3.11"
 license = { text = "MIT" }
 authors = [{ name = "Contributors" }]
 dependencies = [
-    "fastmcp>=3.4.5",
+    "fastmcp>=3.4.6",
     "slack_sdk>=3.43.0",
 ]
 
