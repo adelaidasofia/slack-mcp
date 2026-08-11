@@ -33,6 +33,17 @@ def export_channel(workspace: str, channel_name: str, channel_id: str,
     """Write the channel to vault. Returns the path written, or None."""
     if not ENABLED or not messages:
         return None
+    # Fail loud, never manufacture. A stale SLACK_MCP_VAULT_PATH (vault moved,
+    # config not updated) must NOT be recreated as an empty tree wherever it
+    # points — that strands every export outside the real vault with no error.
+    # Subdirs INSIDE an existing root are ours to create; the root never is.
+    if not VAULT_ROOT.is_dir():
+        log.warning(
+            "vault_export SKIPPED: SLACK_MCP_VAULT_PATH=%s does not exist. "
+            "Refusing to create it — point it at your real vault root.",
+            VAULT_ROOT,
+        )
+        return None
     try:
         target_dir = VAULT_ROOT / EXPORT_DIR_NAME / SLACK_DIR_NAME / workspace
         target_dir.mkdir(parents=True, exist_ok=True)
