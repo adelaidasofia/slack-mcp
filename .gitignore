@@ -1,4 +1,9 @@
 .env
+# Any .env variant: backups, per-machine copies, .env.local. Bare `.env` does
+# not match `.env.bak-*`, so a routine backup lands untracked-but-committable
+# in a public repo. Keep the example, which carries no secrets.
+.env.*
+!.env.example
 *.log
 __pycache__/
 *.pyc
