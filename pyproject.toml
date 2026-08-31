@@ -8,7 +8,7 @@ license = { text = "MIT" }
 authors = [{ name = "Contributors" }]
 dependencies = [
     "fastmcp>=3.4.7",
-    "slack_sdk>=3.43.0",
+    "slack_sdk>=3.44.0",
 ]
 
 [project.scripts]
