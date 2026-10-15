@@ -1,2 +1,2 @@
-fastmcp>=4.0.10
+fastmcp>=4.1.0
 slack_sdk>=3.45.0
